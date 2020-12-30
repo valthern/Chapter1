@@ -22,14 +22,14 @@ namespace Chapter1
         {
             bool stopped = false;
             Thread t = new Thread(new ThreadStart(() =>
-            {
-                while (!stopped)
-                {
-                    Console.WriteLine("Running...");
-                    Thread.Sleep(1000);
-                }
-            }));
-            
+              {
+                  while (!stopped)
+                  {
+                      Console.WriteLine("Running...");
+                      Thread.Sleep(1000);
+                  }
+              }));
+
             t.Start();
             Console.WriteLine("Press any key to exit");
             Console.ReadKey();
