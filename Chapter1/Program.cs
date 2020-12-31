@@ -9,33 +9,30 @@ namespace Chapter1
 {
     public static class Program
     {
-        public static void ThreadMethod(object o)
-        {
-            for (int i = 0; i < (int)o; i++)
-            {
-                Console.WriteLine("ThreadProc: {0}", i);
-                Thread.Sleep(1000);
-            }
-        }
+        public static ThreadLocal<int> _field = new ThreadLocal<int>(() =>
+          {
+              return Thread.CurrentThread.ManagedThreadId;
+          });
 
         public static void Main()
         {
-            bool stopped = false;
-            Thread t = new Thread(new ThreadStart(() =>
-              {
-                  while (!stopped)
-                  {
-                      Console.WriteLine("Running...");
-                      Thread.Sleep(1000);
-                  }
-              }));
+            new Thread(() =>
+            {
+                for (int x = 0; x < _field.Value; x++)
+                {
+                    Console.WriteLine("Thread A: {0}", x);
+                }
+            }).Start();
 
-            t.Start();
-            Console.WriteLine("Press any key to exit");
+            new Thread(() =>
+            {
+                for (int x = 0; x < _field.Value; x++)
+                {
+                    Console.WriteLine("Thread B: {0}", x);
+                }
+            }).Start();
+
             Console.ReadKey();
-
-            stopped = true;
-            t.Join();
         }
     }
 }
