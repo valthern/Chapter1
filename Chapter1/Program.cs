@@ -23,7 +23,7 @@ namespace Chapter1
                     Console.WriteLine("Thread A: {0}", x);
                 }
             }).Start();
-
+            
             new Thread(() =>
             {
                 for (int x = 0; x < _field.Value; x++)
