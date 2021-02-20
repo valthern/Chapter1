@@ -9,30 +9,37 @@ namespace Chapter1
 {
     public static class Program
     {
-        public static ThreadLocal<int> _field = new ThreadLocal<int>(() =>
-          {
-              return Thread.CurrentThread.ManagedThreadId;
-          });
-
         public static void Main()
         {
-            new Thread(() =>
-            {
-                for (int x = 0; x < _field.Value; x++)
-                {
-                    Console.WriteLine("Thread A: {0}", x);
-                }
-            }).Start();
-            
-            new Thread(() =>
-            {
-                for (int x = 0; x < _field.Value; x++)
-                {
-                    Console.WriteLine("Thread B: {0}", x);
-                }
-            }).Start();
+            Task[] tasks = new Task[3];
 
-            Console.ReadKey();
+            tasks[0] = Task.Run(() =>
+            {
+                Thread.Sleep(2000);
+                return 1;
+            });
+            tasks[1] = Task.Run(() =>
+            {
+                Thread.Sleep(1000);
+                return 2;
+            });
+            tasks[2] = Task.Run(() =>
+            {
+                Thread.Sleep(3000);
+                return 3;
+            });
+
+            while (tasks.Length > 0)
+            {
+                int i = Task.WaitAny(tasks);
+                Task<int> completeTask = tasks[i] as Task<int>;
+
+                Console.WriteLine(completeTask.Result);
+
+                var temp = tasks.ToList();
+                temp.RemoveAt(i);
+                tasks = temp.ToArray();
+            }
         }
     }
 }
