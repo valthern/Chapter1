@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,18 +12,21 @@ namespace Chapter1
     {
         public static void Main()
         {
-            ParallelLoopResult result = Parallel.For(0, 1000, (int i, ParallelLoopState loopState) =>
-               {
-                   if (i == 500)
-                   {
-                       Console.WriteLine("Breaking loop");
-                       loopState.Break();
-                   }
 
-                   return;
-               });
+        }
 
-            Console.WriteLine(result);
+        public static Task SleepAsyncA(int millisecondsTimeout)
+        {
+            return Task.Run(() => Thread.Sleep(millisecondsTimeout));
+        }
+
+        public static Task SleepAsyncB(int millisecondsTimeout)
+        {
+            TaskCompletionSource<bool> tcs = null;
+            var t = new Timer(delegate { tcs.TrySetResult(true); }, null, -1, -1);
+            tcs = new TaskCompletionSource<bool>(t);
+            t.Change(millisecondsTimeout, -1);
+            return tcs.Task;
         }
     }
 }
