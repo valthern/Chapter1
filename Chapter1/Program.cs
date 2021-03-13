@@ -12,21 +12,13 @@ namespace Chapter1
     {
         public static void Main()
         {
+            var numbers = Enumerable.Range(0, 10);
+            var parallelResult = numbers.AsParallel().AsOrdered().Where(i => i % 2 == 0).ToArray();
 
-        }
-
-        public static Task SleepAsyncA(int millisecondsTimeout)
-        {
-            return Task.Run(() => Thread.Sleep(millisecondsTimeout));
-        }
-
-        public static Task SleepAsyncB(int millisecondsTimeout)
-        {
-            TaskCompletionSource<bool> tcs = null;
-            var t = new Timer(delegate { tcs.TrySetResult(true); }, null, -1, -1);
-            tcs = new TaskCompletionSource<bool>(t);
-            t.Change(millisecondsTimeout, -1);
-            return tcs.Task;
+            foreach (int i in parallelResult)
+            {
+                Console.WriteLine(i);
+            }
         }
     }
 }
